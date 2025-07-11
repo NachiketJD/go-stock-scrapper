@@ -78,4 +78,15 @@ func main() {
 		"price",
 		"change",
 	}
+
+	writer.Write(headers)
+	for _, stock := range stocks {
+		record := []string{
+			stock.company,
+			stock.price,
+			stock.change,
+		}
+		writer.Write(record)
+	}
+	defer writer.Flush()
 }
