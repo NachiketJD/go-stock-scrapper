@@ -44,5 +44,24 @@ func main() {
 		log.Println("Something went wrong: ", err)
 	})
 
-	c.Visit("https://finance.yahoo.com/quote/%5EDJI/components?p=%5EDJI")
+	c.OnHTML("div#quote-header-info", func(e *colly.HTMLElement) {
+
+		stock := Stock{}
+
+		stock.company = e.ChildText("h1")
+		fmt.Println("Company:", stock.company)
+		stock.price = e.ChildText("fin-streamer[data-field='regularMarketPrice']")
+		fmt.Println("Price:", stock.price)
+		stock.change = e.ChildText("fin-streamer[data-field='regularMarketChangePercent']")
+		fmt.Println("Change:", stock.change)
+
+		stocks = append(stocks, stock)
+	})
+	c.Wait()
+
+	for _, t := range ticker {
+		c.Visit("https://finance.yahoo.com/quote/" + t + "/")
+	}
+
+	fmt.Println(stocks)
 }
